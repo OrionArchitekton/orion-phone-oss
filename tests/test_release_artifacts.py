@@ -4,6 +4,7 @@ import io
 import subprocess
 import sys
 import tarfile
+import zipfile
 from pathlib import Path
 
 import pytest
@@ -93,3 +94,50 @@ def test_source_archive_timestamps_do_not_change_release_bytes(tmp_path):
         assert result.returncode == 0, result.stderr
         outputs.append(archive.read_bytes())
     assert outputs[0] == outputs[1]
+
+
+def test_wheel_permissions_do_not_change_release_bytes(tmp_path):
+    outputs = []
+    payloads = {
+        "orion_phone/cli.py": b"print('synthetic')\n",
+        "orion_phone/config.example.toml": b"[phones]\n",
+        "orion_phone-0.2.0.dist-info/WHEEL": b"Wheel-Version: 1.0\n",
+        "orion_phone-0.2.0.dist-info/METADATA": b"Version: 0.2.0\n",
+        "orion_phone-0.2.0.dist-info/RECORD": b"synthetic-record\n",
+    }
+    for index, mode in enumerate([0o100644, 0o100664]):
+        archive = tmp_path / f"candidate-{index}.whl"
+        with zipfile.ZipFile(archive, "w", compression=zipfile.ZIP_DEFLATED) as out:
+            for name, payload in payloads.items():
+                info = zipfile.ZipInfo(name, (2026, 10, 16, 17, 0, 0))
+                info.compress_type = zipfile.ZIP_DEFLATED
+                info.external_attr = mode << 16
+                out.writestr(info, payload)
+        result = subprocess.run(
+            [sys.executable, str(ROOT / ".github/normalize_wheel.py"), str(archive)],
+            capture_output=True, text=True,
+        )
+        assert result.returncode == 0, result.stderr
+        with zipfile.ZipFile(archive) as wheel:
+            assert {name: wheel.read(name) for name in wheel.namelist()} == payloads
+            assert wheel.getinfo("orion_phone/cli.py").external_attr >> 16 == 0o100664
+            assert wheel.getinfo("orion_phone/config.example.toml").external_attr >> 16 == 0o100644
+        outputs.append(archive.read_bytes())
+    assert outputs[0] == outputs[1]
+
+
+@pytest.mark.parametrize("name,mode", [("../outside.py", 0o100644), ("link.py", 0o120777)])
+def test_wheel_normalization_refuses_unsafe_members_without_rewriting(tmp_path, name, mode):
+    archive = tmp_path / "unsafe.whl"
+    with zipfile.ZipFile(archive, "w") as out:
+        info = zipfile.ZipInfo(name)
+        info.external_attr = mode << 16
+        out.writestr(info, b"synthetic")
+    before = archive.read_bytes()
+    result = subprocess.run(
+        [sys.executable, str(ROOT / ".github/normalize_wheel.py"), str(archive)],
+        capture_output=True, text=True,
+    )
+    assert result.returncode != 0
+    assert "safe regular files" in result.stderr
+    assert archive.read_bytes() == before
