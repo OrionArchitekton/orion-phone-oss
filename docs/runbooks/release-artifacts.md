@@ -7,6 +7,7 @@ references:
   - .github/workflows/release.yml
   - .github/verify_release.py
   - .github/normalize_sdist.py
+  - .github/normalize_wheel.py
   - .github/source-date-epoch.txt
   - bootstrap-requirements.txt
   - specs/release-approval-spec.md
@@ -22,8 +23,27 @@ Record the source commit and the SOURCE_DATE_EPOCH in `.github/source-date-epoch
 That tracked epoch controls wheel timestamps; `normalize_sdist.py` also removes
 tar/gzip timestamp and builder-identity variation without changing file payloads.
 Run that normalizer on the built source distribution before writing SHA256SUMS.
+Run `normalize_wheel.py` on the wheel too. It preserves the reviewed v0.2.0
+permission profile (0664 Python sources and WHEEL/RECORD, 0644 copied data),
+independent of the builder's umask, without changing file contents.
 The private build and a clean source-export build must produce matching hashes.
 If a later CI preparation differs, stop: do not approve a new digest implicitly.
+
+To reproduce an older approved package after a release-tooling fix, manually
+dispatch preparation with `source_commit` set to its full 40-character commit
+SHA. The commit must already be on main. Preparation records the source and
+automation commits separately, builds the selected source, and retains both
+archive normalizers from that automation revision. Build dependency pins,
+bootstrap pins, and the epoch remain part of the selected source snapshot;
+substituting today's build tools could change historically approved bytes.
+Every source-check job checks out that same selected commit;
+checks on the release-tooling commit do not substitute for source validation.
+Compare the resulting manifest with the original approval;
+do not retag, rebuild from a different source, or replace the approval digest.
+Credential-free preparation can run on a review branch to validate an automation
+fix before merge. This does not qualify that branch for publication: publication
+still runs only from main with exact artifact approval and the protected human
+environment review. A tagged preparation cannot override its tag's source.
 
 ## Review and validation
 
