@@ -1,9 +1,6 @@
 name: gitleaks
 
 on:
-  pull_request:
-  push:
-    branches: [main]
   workflow_call:  # the release workflow runs this scan on the tagged commit
 
 permissions:
