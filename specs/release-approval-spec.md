@@ -17,6 +17,11 @@ wheel, source distribution, and their SHA-256 manifest before requesting upload.
    the reviewed package contents or implicitly approves a new manifest.
    All source checks run against the same selected commit that is packaged;
    passing checks for another commit never qualify a candidate for upload.
+   Credential-free preparation may use automation from a review branch. Tagged
+   preparation packages that tag's commit; it cannot select a different source.
+   Archive normalization uses the recorded automation revision. Build dependency
+   pins and the recorded build epoch belong to the selected package source, so
+   historical reproduction preserves its approved build inputs.
 2. A maintainer selects an artifact by its immutable identifier and supplies the
    reviewed manifest digest and version. Verification accepts only those exact
    files and bytes. A changed file, missing file, extra file, symlink, invalid

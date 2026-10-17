@@ -618,6 +618,10 @@ stop them.
   requires the exact reviewed manifest and a separate human approval in the publishing
   environment; preparation has no publishing credential. The detailed acceptance contract is
   [Approval of release artifacts](release-approval-spec.md).
+  Credential-free preparation may run from a review branch with validated source on the
+  default branch; tagged preparation always packages its own tagged commit. Archive
+  normalizers come from the recorded automation revision, while hashed build dependency
+  pins and the build epoch come from the selected source.
 - Documentation images come from a clean demo phone signed in to no personal accounts.
 - System images are never redistributed. Setup downloads them with the operator's own SDK
   tools. Accepting Google's Android SDK License is the operator's own step before setup: current

@@ -32,11 +32,18 @@ If a later CI preparation differs, stop: do not approve a new digest implicitly.
 To reproduce an older approved package after a release-tooling fix, manually
 dispatch preparation with `source_commit` set to its full 40-character commit
 SHA. The commit must already be on main. Preparation records the source and
-tooling commits separately, builds the selected source, and uses the current
-wheel normalizer. Every source-check job checks out that same selected commit;
+automation commits separately, builds the selected source, and retains both
+archive normalizers from that automation revision. Build dependency pins,
+bootstrap pins, and the epoch remain part of the selected source snapshot;
+substituting today's build tools could change historically approved bytes.
+Every source-check job checks out that same selected commit;
 checks on the release-tooling commit do not substitute for source validation.
 Compare the resulting manifest with the original approval;
 do not retag, rebuild from a different source, or replace the approval digest.
+Credential-free preparation can run on a review branch to validate an automation
+fix before merge. This does not qualify that branch for publication: publication
+still runs only from main with exact artifact approval and the protected human
+environment review. A tagged preparation cannot override its tag's source.
 
 ## Review and validation
 

@@ -18,6 +18,8 @@ def normalize(path: Path) -> None:
                 name = PurePosixPath(member.filename)
                 mode = member.external_attr >> 16
                 if (name.is_absolute() or ".." in name.parts or member.is_dir()
+                        or "\\" in member.filename or ":" in member.filename
+                        or name.as_posix() != member.filename or member.external_attr & 0x10
                         or stat.S_IFMT(mode) not in (0, stat.S_IFREG)):
                     raise ValueError("wheel must contain only safe regular files")
                 # Preserve v0.2.0's approved profile. Python sources and the

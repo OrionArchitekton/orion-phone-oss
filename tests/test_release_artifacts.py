@@ -126,12 +126,21 @@ def test_wheel_permissions_do_not_change_release_bytes(tmp_path):
     assert outputs[0] == outputs[1]
 
 
-@pytest.mark.parametrize("name,mode", [("../outside.py", 0o100644), ("link.py", 0o120777)])
-def test_wheel_normalization_refuses_unsafe_members_without_rewriting(tmp_path, name, mode):
+@pytest.mark.parametrize("name,mode,dos_attributes", [
+    ("../outside.py", 0o100644, 0),
+    ("link.py", 0o120777, 0),
+    ("..\\outside.py", 0o100644, 0),
+    ("C:/outside.py", 0o100644, 0),
+    ("C:outside.py", 0o100644, 0),
+    ("orion_phone//cli.py", 0o100644, 0),
+    ("./orion_phone/cli.py", 0o100644, 0),
+    ("directory-without-slash", 0, 0x10),
+])
+def test_wheel_normalization_refuses_unsafe_members_without_rewriting(tmp_path, name, mode, dos_attributes):
     archive = tmp_path / "unsafe.whl"
     with zipfile.ZipFile(archive, "w") as out:
         info = zipfile.ZipInfo(name)
-        info.external_attr = mode << 16
+        info.external_attr = (mode << 16) | dos_attributes
         out.writestr(info, b"synthetic")
     before = archive.read_bytes()
     result = subprocess.run(
