@@ -15,6 +15,8 @@ wheel, source distribution, and their SHA-256 manifest before requesting upload.
    already on the default branch, retaining the current release tooling. The
    source and tooling commits are recorded separately. Reproduction never changes
    the reviewed package contents or implicitly approves a new manifest.
+   All source checks run against the same selected commit that is packaged;
+   passing checks for another commit never qualify a candidate for upload.
 2. A maintainer selects an artifact by its immutable identifier and supplies the
    reviewed manifest digest and version. Verification accepts only those exact
    files and bytes. A changed file, missing file, extra file, symlink, invalid

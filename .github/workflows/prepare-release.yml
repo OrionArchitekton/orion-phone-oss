@@ -19,6 +19,8 @@ jobs:
   checks:
     name: checks
     uses: ./.github/workflows/ci.yml
+    with:
+      source_commit: ${{ inputs.source_commit || github.sha }}
 
   secrets:
     name: secrets

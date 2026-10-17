@@ -611,6 +611,13 @@ stop them.
   listed synthetic fixtures and documentation images.
 - CI runs a secret scanner on every push and pull request. Third-party CI actions are pinned
   to commit SHAs.
+- Release preparation checks and packages the same source commit. The maintainer may select
+  a previously reviewed commit already on the default branch, with source and release-tooling
+  commits recorded separately. Normalized archive timestamps and file permissions preserve
+  the reviewed artifact bytes across builders without changing file contents. Publication
+  requires the exact reviewed manifest and a separate human approval in the publishing
+  environment; preparation has no publishing credential. The detailed acceptance contract is
+  [Approval of release artifacts](release-approval-spec.md).
 - Documentation images come from a clean demo phone signed in to no personal accounts.
 - System images are never redistributed. Setup downloads them with the operator's own SDK
   tools. Accepting Google's Android SDK License is the operator's own step before setup: current

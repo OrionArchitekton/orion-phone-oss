@@ -33,7 +33,9 @@ To reproduce an older approved package after a release-tooling fix, manually
 dispatch preparation with `source_commit` set to its full 40-character commit
 SHA. The commit must already be on main. Preparation records the source and
 tooling commits separately, builds the selected source, and uses the current
-wheel normalizer. Compare the resulting manifest with the original approval;
+wheel normalizer. Every source-check job checks out that same selected commit;
+checks on the release-tooling commit do not substitute for source validation.
+Compare the resulting manifest with the original approval;
 do not retag, rebuild from a different source, or replace the approval digest.
 
 ## Review and validation
