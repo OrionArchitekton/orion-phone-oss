@@ -1,0 +1,100 @@
+name: release
+
+# Explicit promotion only. Configure PyPI's publisher for this file and the
+# pypi environment, with required human reviewers, before enabling publication.
+on:
+  workflow_dispatch:
+    inputs:
+      build_run_id:
+        description: Successful prepare-release workflow run holding the artifact
+        required: true
+        type: string
+      artifact_id:
+        description: Immutable Actions artifact ID containing the reviewed files
+        required: true
+        type: string
+      manifest_sha256:
+        description: SHA-256 of the reviewed SHA256SUMS file
+        required: true
+        type: string
+      version:
+        description: Reviewed package version, such as 0.2.0
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pypi-release
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - name: Select one immutable artifact
+        env:
+          ARTIFACT_ID: ${{ inputs.artifact_id }}
+          BUILD_RUN_ID: ${{ inputs.build_run_id }}
+        run: |
+          [[ "$ARTIFACT_ID" =~ ^[1-9][0-9]*$ ]]
+          [[ "$BUILD_RUN_ID" =~ ^[1-9][0-9]*$ ]]
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          artifact-ids: ${{ inputs.artifact_id }}
+          run-id: ${{ inputs.build_run_id }}
+          github-token: ${{ github.token }}
+          merge-multiple: true
+          path: reviewed/
+      - name: Verify the exact reviewed release set
+        env:
+          EXPECTED_MANIFEST_SHA256: ${{ inputs.manifest_sha256 }}
+          RELEASE_VERSION: ${{ inputs.version }}
+        run: python .github/verify_release.py reviewed "$EXPECTED_MANIFEST_SHA256" "$RELEASE_VERSION"
+      - name: Show the approval target
+        env:
+          ARTIFACT_ID: ${{ inputs.artifact_id }}
+          BUILD_RUN_ID: ${{ inputs.build_run_id }}
+          EXPECTED_MANIFEST_SHA256: ${{ inputs.manifest_sha256 }}
+        run: |
+          printf 'Build run: %s\nArtifact ID: %s\nManifest SHA-256: %s\n' "$BUILD_RUN_ID" "$ARTIFACT_ID" "$EXPECTED_MANIFEST_SHA256" >> "$GITHUB_STEP_SUMMARY"
+          cat reviewed/SHA256SUMS >> "$GITHUB_STEP_SUMMARY"
+
+  publish:
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: pypi
+      url: https://pypi.org/p/orion-phone
+    permissions:
+      actions: read
+      id-token: write
+    steps:
+      # No checkout, build, or dependency install in this credential-bearing job.
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          artifact-ids: ${{ inputs.artifact_id }}
+          run-id: ${{ inputs.build_run_id }}
+          github-token: ${{ github.token }}
+          merge-multiple: true
+          path: reviewed/
+      - name: Recheck and stage the approved bytes without rebuilding
+        env:
+          EXPECTED_MANIFEST_SHA256: ${{ inputs.manifest_sha256 }}
+        run: |
+          cd reviewed
+          test "$(sha256sum SHA256SUMS | cut -d ' ' -f1)" = "$EXPECTED_MANIFEST_SHA256"
+          sha256sum --check --strict SHA256SUMS
+          mkdir ../dist
+          cp -- *.whl *.tar.gz ../dist/
+      - uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2

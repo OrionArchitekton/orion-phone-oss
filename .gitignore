@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+build/
+dist/
+.pytest_cache/
+
+# Phone artifacts never belong in git (documentation images live in docs/assets/)
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.xml
+*.jsonl
+*.mp4
+!docs/assets/**
+
+# Config and state live outside the repo by design
+config.toml
+state/
+.env*
+.private/

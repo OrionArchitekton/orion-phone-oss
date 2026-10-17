@@ -1,0 +1,28 @@
+# orion-phone config. `orion-phone init` writes this file to ~/.config/orion-phone/config.toml; edit it there.
+# Keep this file and the state directory outside any git repository.
+
+[android]
+sdk_root = "~/Android/Sdk"
+# adb = "~/Android/Sdk/platform-tools/adb"   # optional override; also what the adb server's unit runs, so install-units
+#                                            # refuses whitespace, quotes, a backslash, $, % and control characters in it
+# A locked phone needs a Google Play image (a tag that starts with google_apis_playstore).
+# A config whose phones are all open may use any image.
+system_image = "system-images;android-36;google_apis_playstore;x86_64"
+device = "pixel_7"
+gpu = "auto"
+ram_mb = 4096
+data_partition = "16G"
+
+[lease]
+ttl_minutes = 30
+
+# An open phone: agents drive it whenever they hold its lease.
+[phones.a]
+tier = "open"
+console_port = 5554
+
+# A locked phone: off until needed, usable only after you unlock it by hand.
+[phones.b]
+tier = "locked"
+console_port = 5556
+session_cap_minutes = 120

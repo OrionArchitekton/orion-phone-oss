@@ -1,0 +1,6 @@
+include bootstrap-requirements.txt
+include SECURITY.md CONTRIBUTING.md AGENTS.md config.example.toml
+recursive-include .github *.py *.txt *.in *.yml
+recursive-include specs *.md
+recursive-include docs *.md
+recursive-include tests *.py
