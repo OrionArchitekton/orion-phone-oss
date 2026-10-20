@@ -5,8 +5,20 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
+    groups:
+      actions:
+        patterns: ["*"]
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
+    groups:
+      build-toolchain:
+        patterns: ["build", "packaging", "pip", "pyproject-hooks", "setuptools", "wheel"]
+      routine:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+      security:
+        applies-to: security-updates
+        patterns: ["*"]
