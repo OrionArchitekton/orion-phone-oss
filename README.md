@@ -2,6 +2,8 @@
 
 <!-- mcp-name: io.github.OrionArchitekton/orion-phone -->
 
+Part of [Cosmocrat OS](https://www.cosmocrat.ai/tools#orion-phone).
+
 **Give your agent its own phone.**
 
 orion-phone runs Android phones (emulators) that AI agents drive through an MCP server or a CLI:
