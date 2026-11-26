@@ -1,0 +1,12 @@
+{
+  "name": "orion-phone",
+  "version": "0.2.0",
+  "description": "Android emulator phones for AI agents: leases, a locked tier, and an audit trail.",
+  "mcpServers": {
+    "orion-phone": {
+      "command": "uvx",
+      "args": ["--from", "orion-phone==0.2.0", "orion-phone-mcp"]
+    }
+  },
+  "contextFileName": "GEMINI.md"
+}
