@@ -101,14 +101,18 @@ PyPI release with `uvx --from orion-phone==0.2.0 orion-phone-mcp`, so it needs
 `orion-phone setup` above.
 
 ```bash
-gemini extensions install https://github.com/OrionArchitekton/orion-phone-oss --ref main
+git clone https://github.com/OrionArchitekton/orion-phone-oss
+gemini extensions install ./orion-phone-oss
 ```
 
-`--ref main` is needed until a GitHub release that contains `gemini-extension.json` is marked
-Latest: without it, Gemini CLI installs from the Latest release (v0.2.0), which predates the
-manifest. The first start downloads the package, so `gemini mcp list` can report the server
-disconnected until that download finishes. The extension adds a short `GEMINI.md` with
-the lease rules for the model.
+Installing straight from the GitHub URL needs a GitHub release that contains
+`gemini-extension.json` to be marked Latest; the current Latest release (v0.2.0) predates it.
+Until then, `--ref main` makes Gemini CLI clone the repository instead, which Gemini CLI 0.71.1
+and earlier fail to do
+([google-gemini/gemini-cli#30416](https://github.com/google-gemini/gemini-cli/issues/30416)), so
+install from a checkout as above. The first start downloads the package, so `gemini mcp list` can
+report the server disconnected until that download finishes. The extension adds a short
+`GEMINI.md` with the lease rules for the model.
 
 ### MCP Registry
 
