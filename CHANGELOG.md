@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- `server.json` describes orion-phone for the Official MCP Registry as
+  `io.github.OrionArchitekton/orion-phone`: the PyPI package 0.2.0, started over stdio with
+  `uvx --from orion-phone==0.2.0 orion-phone-mcp`. Nothing is published yet.
+- `gemini-extension.json` and a short `GEMINI.md` make the repository a Gemini CLI extension that
+  starts the same pinned package. No package code changes; the package version stays 0.2.0.
+- README: installing in Gemini CLI, and the MCP Registry entry.
+
 ## 0.2.0 (unreleased)
 
 The first public release.
