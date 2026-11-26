@@ -1,0 +1,52 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.OrionArchitekton/orion-phone",
+  "title": "orion-phone",
+  "description": "Android emulator phones for AI agents: leases, a locked tier, and an audit trail.",
+  "websiteUrl": "https://www.cosmocrat.ai/tools#orion-phone",
+  "repository": {
+    "url": "https://github.com/OrionArchitekton/orion-phone-oss",
+    "source": "github"
+  },
+  "version": "0.2.0",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "registryBaseUrl": "https://pypi.org",
+      "identifier": "orion-phone",
+      "version": "0.2.0",
+      "runtimeHint": "uvx",
+      "runtimeArguments": [
+        {
+          "type": "positional",
+          "value": "--from"
+        },
+        {
+          "type": "positional",
+          "value": "orion-phone==0.2.0"
+        },
+        {
+          "type": "positional",
+          "value": "orion-phone-mcp"
+        }
+      ],
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "ORION_PHONE_CONFIG",
+          "description": "Config file path (absolute or starting with ~), outside any git repository. Set it only if setup used the same value.",
+          "isRequired": false,
+          "default": "~/.config/orion-phone/config.toml"
+        },
+        {
+          "name": "ORION_PHONE_STATE",
+          "description": "State directory for leases, audit records and screenshots (absolute or starting with ~), outside any git repository. Set it only if setup used the same value.",
+          "isRequired": false,
+          "default": "~/.local/state/orion-phone"
+        }
+      ]
+    }
+  ]
+}
