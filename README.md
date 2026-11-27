@@ -93,6 +93,35 @@ Do not launch the server as `python -m orion_phone.mcp_server` from inside a pro
 because a package named `orion_phone` there would shadow this one; the `orion-phone-mcp` command
 is unaffected.
 
+### Install in Gemini CLI
+
+The repository is also a Gemini CLI extension (`gemini-extension.json`). It starts the pinned
+PyPI release with `uvx --from orion-phone==0.2.0 orion-phone-mcp`, so it needs
+[uv](https://docs.astral.sh/uv/) on `PATH`, and the phones still come from `orion-phone init` and
+`orion-phone setup` above.
+
+```bash
+git clone https://github.com/OrionArchitekton/orion-phone-oss
+gemini extensions install ./orion-phone-oss
+```
+
+Installing straight from the GitHub URL needs a GitHub release that contains
+`gemini-extension.json` to be marked Latest; the current Latest release (v0.2.0) predates it.
+Until then, `--ref main` makes Gemini CLI clone the repository instead, which Gemini CLI 0.71.1
+and earlier fail to do
+([google-gemini/gemini-cli#30416](https://github.com/google-gemini/gemini-cli/issues/30416)), so
+install from a checkout as above. The first start downloads the package, so `gemini mcp list` can
+report the server disconnected until that download finishes. The extension adds a short
+`GEMINI.md` with the lease rules for the model.
+
+### MCP Registry
+
+orion-phone is described for the [Official MCP Registry](https://registry.modelcontextprotocol.io)
+as `io.github.OrionArchitekton/orion-phone` in [`server.json`](server.json): the PyPI package
+`orion-phone`, launched over stdio as `uvx --from orion-phone==0.2.0 orion-phone-mcp`. The
+`mcp-name` comment at the top of this README is how the registry checks that the PyPI package
+belongs to this name.
+
 ## Use it from a shell
 
 ```bash
