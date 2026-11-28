@@ -2,6 +2,8 @@
 
 <!-- mcp-name: io.github.OrionArchitekton/orion-phone -->
 
+[![Orion Phone MCP server](https://mcprush.com/badge/orion-phone-mcp/card.svg)](https://mcprush.com/to/orion-phone-mcp?ref=badge)
+
 Part of [Cosmocrat OS](https://www.cosmocrat.ai/tools#orion-phone).
 
 **Give your agent its own phone.**
